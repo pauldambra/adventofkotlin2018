@@ -25,5 +25,5 @@ class WithNoObstacles {
 }
 
 private fun String.findRoute(): String {
-    return ""
+    return this
 }
