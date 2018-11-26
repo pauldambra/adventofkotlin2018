@@ -1,4 +1,4 @@
-package com.dambra.kotlinadvent
+package com.dambra.kotlinadvent.week1
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -22,8 +22,4 @@ class WithNoObstacles {
 ...*.......
 ..*........""")
     }
-}
-
-private fun String.findRoute(): String {
-    return this
 }
