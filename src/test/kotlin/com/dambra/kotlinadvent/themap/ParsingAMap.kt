@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 internal class ParsingAMap {
     @Test
     fun `can parse a 2x2 map`() {
-        val map = asMap(""".S
+        val map = AdventMap.parseFrom(""".S
             X.
         """)
 
@@ -19,7 +19,7 @@ internal class ParsingAMap {
 
     @Test
     fun `can parse a mirrored 2x2 map`() {
-        val map = asMap("""S.
+        val map = AdventMap.parseFrom("""S.
             .X
         """)
 
@@ -30,26 +30,35 @@ internal class ParsingAMap {
         assertThat(map.finishCoordinate).isEqualTo(Coordinate(1,1))
     }
 
-    private fun asMap(s: String): AdventMap {
-
-        val rows = s.split("\n").map { it.trim() }.filter(String::isNotBlank)
-
-        val rowLength = rows.firstOrNull()?.length ?: throw Exception("there are no rows?!")
-        if (!rows.all { it.length == rowLength }) {
-            throw Exception("not all rows are ${rowLength}long")
-        }
-
-        val startRow = rows.indexOfFirst { it.contains('S') }
-        val startColumn = rows[startRow].indexOf('S')
-
-        val endRow = rows.indexOfFirst { it.contains('X') }
-        val endColumn = rows[endRow].indexOf('X')
-
-        return AdventMap(rowLength, rows.size, Coordinate(startRow, startColumn), Coordinate(endRow, endColumn))
-    }
-
 }
 
-class AdventMap(val width: Int, val height: Int, val startCoordinate: Coordinate, val finishCoordinate: Coordinate)
+class AdventMap(val width: Int, val height: Int, val startCoordinate: Coordinate, val finishCoordinate: Coordinate) {
+    companion object {
+        fun parseFrom(s: String): AdventMap {
+            val rows = s.split("\n").map { it.trim() }.filter(String::isNotBlank)
+
+            val rowLength = rows.firstOrNull()?.length ?: throw Exception("there are no rows?!")
+            if (!rows.all { it.length == rowLength }) {
+                throw Exception("not all rows are ${rowLength}long")
+            }
+
+            val startCoordinate = findStartCoordinate(rows)
+
+            val finishCoordinate = findFinishCoordinate(rows)
+
+            return AdventMap(rowLength, rows.size, startCoordinate, finishCoordinate)
+        }
+
+        private fun findFinishCoordinate(rows: List<String>) = findCoordinateOf(rows, 'X')
+
+        private fun findStartCoordinate(rows: List<String>) = findCoordinateOf(rows, 'S')
+
+        private fun findCoordinateOf(rows: List<String>, target: Char): Coordinate {
+            val startRow = rows.indexOfFirst { it.contains(target) }
+            val startColumn = rows[startRow].indexOf(target)
+            return Coordinate(startRow, startColumn)
+        }
+    }
+}
 
 data class Coordinate(val x: Int, val y: Int)
