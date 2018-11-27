@@ -45,5 +45,20 @@ internal class ParsingAMap {
         assertThat(map.finishCoordinate).isEqualTo(Coordinate(1, 1))
     }
 
+    @Test
+    fun `can parse blockages out of the input`() {
+        val map = AdventMap.parseFrom("""
+                                .,S,B,.
+                                .,X,B,.""")
+
+        assertThat(map.width).isEqualTo(4)
+        assertThat(map.height).isEqualTo(2)
+
+        assertThat(map.startCoordinate).isEqualTo(Coordinate(1, 0))
+        assertThat(map.finishCoordinate).isEqualTo(Coordinate(1, 1))
+
+        assertThat(map.blockages).isEqualTo(setOf(Coordinate(2, 0),Coordinate(2, 1)))
+    }
+
 }
 

@@ -132,4 +132,20 @@ internal class Coordinates {
 
         assertThat(surrounds).isEqualTo(expectedSurrounds)
     }
+
+    @Test
+    fun `maps can filter blockages`() {
+        val map = AdventMap.parseFrom("""
+                                S,.,.,.
+                                B,X,.,.""")
+
+        val surrounds = map.generateSurroundingCoordinates(map.startCoordinate)
+
+        val expectedSurrounds = listOf(
+                Coordinate(1, 0),
+                Coordinate(1, 1)
+        )
+
+        assertThat(surrounds).isEqualTo(expectedSurrounds)
+    }
 }

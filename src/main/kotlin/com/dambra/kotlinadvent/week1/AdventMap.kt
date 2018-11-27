@@ -1,11 +1,24 @@
 package com.dambra.kotlinadvent.week1
 
-data class AdventMap(val width: Int, val height: Int, val startCoordinate: Coordinate, val finishCoordinate: Coordinate) {
+data class AdventMap(
+        val width: Int,
+        val height: Int,
+        val startCoordinate: Coordinate,
+        val finishCoordinate: Coordinate,
+        val blockages: Set<Coordinate> = emptySet()
+) {
+
     fun generateSurroundingCoordinates(x: Coordinate): List<Coordinate> {
-        return x.generateSurroundingCoordinates()
+        val cs = x.generateSurroundingCoordinates()
                 .filter { it.x in 0..(width - 1) }
                 .filter { it.y in 0..(height - 1) }
+                .filter { !blockages.contains(it) }
+        println("generating sourrounds $cs")
+        return cs
     }
+
+    fun printAt(x: Int, y: Int) =
+            if (blockages.contains(Coordinate(x, y))) "B" else "."
 
     companion object {
         fun parseFrom(s: String): AdventMap {
@@ -24,7 +37,9 @@ data class AdventMap(val width: Int, val height: Int, val startCoordinate: Coord
 
             val finishCoordinate = findFinishCoordinate(rows)
 
-            return AdventMap(rowLength, rows.size, startCoordinate, finishCoordinate)
+            val blockages = findCoordinatesOf(rows, 'B')
+
+            return AdventMap(rowLength, rows.size, startCoordinate, finishCoordinate, blockages)
         }
 
         private fun findFinishCoordinate(rows: List<String>) = findCoordinateOf(rows, 'X')
@@ -36,5 +51,16 @@ data class AdventMap(val width: Int, val height: Int, val startCoordinate: Coord
             val x = rows[y].filter { it != ',' }.indexOf(target)
             return Coordinate(x, y)
         }
+
+        private fun findCoordinatesOf(rows: List<String>, target: Char) =
+                rows.foldIndexed(emptySet()) { yIndex: Int, outerSet: Set<Coordinate>, r: String ->
+                    outerSet + r.foldIndexed(emptySet<Coordinate>()) { xIndex, innerSet, c ->
+                        if (c == target) {
+                            innerSet + Coordinate(xIndex, yIndex)
+                        } else {
+                            innerSet
+                        }
+                    }
+                }
     }
 }
